@@ -18,14 +18,25 @@ const server = net.createServer((socket) => {
     const path =getPath(request);
     console.log(path);
 
-    let response;;
-    if(path==="/"){
+    let response;
+    if(method =="GET" && path ==="/"){
       response ="HTTP/1.1 200 OK\r\n\r\n";
+    }else if(path.startsWith("/echo")){
+      const body =path.slice(6);
+      const headers =
+      `Content-Type: text/plain\r\n` +
+      `Content-Length: ${body.length}\r\n\r\n`;
+       response =`HTTP/1.1 200 OK\r\n`+ headers + body;
     }else{
-      response="HTTP/1.1 404 Not Found\r\n\r\n";
+      response ="HTTP/1.1 404 Not Found\r\n\r\n";
     }
-    socket.write(response);
-    })
- });
 
-server.listen(4221, "localhost");
+    socket.write(response);
+  });
+
+  socket.on("close",()=>{
+    socket.end();
+  });
+  });
+
+  server.listen(4221,"localhost");
